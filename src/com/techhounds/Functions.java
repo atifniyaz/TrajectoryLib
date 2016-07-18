@@ -1,18 +1,21 @@
-package com.team254.lib.trajectory;
+package com.techhounds;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import com.team254.lib.trajectory.Path;
+import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.Trajectory.Segment;
+import com.team254.lib.trajectory.TrajectoryGenerator;
 import com.team254.lib.trajectory.io.TextFileSerializer;
 
 public class Functions {
 
 	protected static TrajectoryGenerator.Config config = new TrajectoryGenerator.Config();;
 
-	public static final double dt = .01, max_acc = 220.0, max_jerk = 480.0, max_vel = 110.0;
+	public static final double dt = 0.0, max_acc = 0.0, max_jerk = 0.0, max_vel = 0.0;
 
 	public static void config(double percentVel) {
 		config.max_vel = percentVel * max_vel;
