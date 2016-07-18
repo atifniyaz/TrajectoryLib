@@ -1,213 +1,259 @@
 package com.team254.lib.trajectory;
 
-import com.team254.lib.trajectory.io.JavaSerializer;
-import com.team254.lib.trajectory.io.JavaStringSerializer;
-import com.team254.lib.trajectory.io.TextFileSerializer;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import com.team254.lib.trajectory.WaypointSequence.Waypoint;
 
 /**
  *
  * @author Jared341
  */
-public class Main {
-  public static String joinPath(String path1, String path2)
-  {
-      File file1 = new File(path1);
-      File file2 = new File(file1, path2);
-      return file2.getPath();
-  }
-  
-  private static boolean writeFile(String path, String data) {
-    try {
-      File file = new File(path);
+public class Main extends Functions {
 
-      // if file doesnt exists, then create it
-      if (!file.exists()) {
-          file.createNewFile();
-      }
+	public static final double dt = .01, max_acc = 220.0, max_jerk = 480.0, max_vel = 110.0;
 
-      FileWriter fw = new FileWriter(file.getAbsoluteFile());
-      BufferedWriter bw = new BufferedWriter(fw);
-      bw.write(data);
-      bw.close();
-    } catch (IOException e) {
-      return false;
-    }
-    
-    return true;
-  }
-  
-  public static void main(String[] args) {
-    String directory = "../FRC-2014/paths";
-    if (args.length >= 1) {
-      directory = args[0];
-    }
-    
-    TrajectoryGenerator.Config config = new TrajectoryGenerator.Config();
-    config.dt = .01;
-    config.max_acc = 10.0;
-    config.max_jerk = 60.0;
-    config.max_vel = 15.0;
-    
-    final double kWheelbaseWidth = 25.5/12;
-    {
-      config.dt = .01;
-      config.max_acc = 8.0;
-      config.max_jerk = 50.0;
-      config.max_vel = 10.0;
-      // Path name must be a valid Java class name.
-      final String path_name = "InsideLanePathFar";
-      
-      // Description of this auto mode path.
-      // Remember that this is for the GO LEFT CASE!
-      WaypointSequence p = new WaypointSequence(10);
-      p.addWaypoint(new WaypointSequence.Waypoint(0, 0, 0));
-      p.addWaypoint(new WaypointSequence.Waypoint(7.0, 0, 0));
-      p.addWaypoint(new WaypointSequence.Waypoint(14.0, 1.0, Math.PI / 12.0));
+	static final double wheelBase_width = 24.0;
+	static String directory = "../TrajectoryLibrary-Build/paths";
+	static String workingDirectory = "../TrajectoryLibrary-Build/paths/trajectory";
 
-      Path path = PathGenerator.makePath(p, config,
-          kWheelbaseWidth, path_name);
+	public static void main(String[] args) {
 
-      // Outputs to the directory supplied as the first argument.
-      TextFileSerializer js = new TextFileSerializer();
-      String serialized = js.serialize(path);
-      //System.out.print(serialized);
-      String fullpath = joinPath(directory, path_name + ".txt");
-      if (!writeFile(fullpath, serialized)) {
-        System.err.println(fullpath + " could not be written!!!!1");
-        System.exit(1);
-      } else {
-        System.out.println("Wrote " + fullpath);
-      }
-    }
-    
-    {
-      config.dt = .01;
-      config.max_acc = 8.0;
-      config.max_jerk = 50.0;
-      config.max_vel = 10.0;
-      // Path name must be a valid Java class name.
-      final String path_name = "CenterLanePathFar";
-      
-      // Description of this auto mode path.
-      // Remember that this is for the GO LEFT CASE!
-      WaypointSequence p = new WaypointSequence(10);
-      p.addWaypoint(new WaypointSequence.Waypoint(0, 0, 0));
-      p.addWaypoint(new WaypointSequence.Waypoint(7.0, 0, 0));
-      p.addWaypoint(new WaypointSequence.Waypoint(14.0, 5.0, Math.PI / 12.0));
+		config.dt = .01;
+		config.max_acc = 220.0;
+		config.max_jerk = 480.0;
+		config.max_vel = 110.0;
 
-      Path path = PathGenerator.makePath(p, config,
-          kWheelbaseWidth, path_name);
+		// Defense Crossings
+		createLowBarCross();
+		createMoatCross();
+		createRampartsCross();
+		createRoughTerrainCross();
+		createRockWallCross();
+		createSallyCross();
+		
+		// Position Movements after Crossing
+		/*createPositionTwoShot();
+		createPositionThreeShot();
+		createPositionFiveShot();
+		
+		// Cheval Special
+		createChevalPositionShot();
+		createChevalGoBack();*/
+	}
+	
+	public static void createLowBarCross() {
+		
+		{
+			config(0.825);
 
-      // Outputs to the directory supplied as the first argument.
-      TextFileSerializer js = new TextFileSerializer();
-      String serialized = js.serialize(path);
-      //System.out.print(serialized);
-      String fullpath = joinPath(directory, path_name + ".txt");
-      if (!writeFile(fullpath, serialized)) {
-        System.err.println(fullpath + " could not be written!!!!1");
-        System.exit(1);
-      } else {
-        System.out.println("Wrote " + fullpath);
-      }
-    }
-    
-    
-    {
-      config.dt = .01;
-      config.max_acc = 8.5;
-      config.max_jerk = 50.0;
-      config.max_vel = 12.0;
-      // Path name must be a valid Java class name.
-      final String path_name = "InsideLanePathClose";
-      
-      // Description of this auto mode path.
-      // Remember that this is for the GO LEFT CASE!
-      WaypointSequence p = new WaypointSequence(10);
-      p.addWaypoint(new WaypointSequence.Waypoint(0, 0, 0));
-      p.addWaypoint(new WaypointSequence.Waypoint(7.0, 0, 0));
-      p.addWaypoint(new WaypointSequence.Waypoint(15.0, 3, Math.PI / 12.0));
+			final String path_name = "LowBarOneBall";
 
-      Path path = PathGenerator.makePath(p, config,
-          kWheelbaseWidth, path_name);
+			WaypointSequence p = new WaypointSequence(10);
+			p.addWaypoint(new Waypoint(0, 0, 0));
+			p.addWaypoint(new Waypoint(48, 36 - 5, 0));
+			p.addWaypoint(new Waypoint(90, 36 - 5, 0));
+			p.addWaypoint(new Waypoint(190 + 24, -10, -Math.PI * 57.0 / 180));
+			//p.addWaypoint(new Waypoint(160, -10, -Math.PI / 4));
+			Path path = PathGenerator.makePath(p, config, 24, path_name);
 
-      // Outputs to the directory supplied as the first argument.
-      TextFileSerializer js = new TextFileSerializer();
-      String serialized = js.serialize(path);
-      //System.out.print(serialized);
-      String fullpath = joinPath(directory, path_name + ".txt");
-      if (!writeFile(fullpath, serialized)) {
-        System.err.println(fullpath + " could not be written!!!!1");
-        System.exit(1);
-      } else {
-        System.out.println("Wrote " + fullpath);
-      }
-    }
-    
-    {
-      config.dt = .01;
-      config.max_acc = 9.0;
-      config.max_jerk = 50.0;
-      config.max_vel = 11.75;
-      // Path name must be a valid Java class name.
-      final String path_name = "StraightAheadPath";
-      
-      // Description of this auto mode path.
-      // Remember that this is for the GO LEFT CASE!
-      WaypointSequence p = new WaypointSequence(10);
-      p.addWaypoint(new WaypointSequence.Waypoint(0, 0, 0));
-      p.addWaypoint(new WaypointSequence.Waypoint(14, 0, 0));
+			create(path, directory, workingDirectory, path_name, false);
+			create(path, directory, workingDirectory, path_name + "-Back", true);
+		}
 
-      Path path = PathGenerator.makePath(p, config,
-          kWheelbaseWidth, path_name);
+		{
+			config(0.68);
 
-      // Outputs to the directory supplied as the first argument.
-      TextFileSerializer js = new TextFileSerializer();
-      String serialized = js.serialize(path);
-      //System.out.print(serialized);
-      String fullpath = joinPath(directory, path_name + ".txt");
-      if (!writeFile(fullpath, serialized)) {
-        System.err.println(fullpath + " could not be written!!!!1");
-        System.exit(1);
-      } else {
-        System.out.println("Wrote " + fullpath);
-      }
-    }
-    
-     {
-      // Path name must be a valid Java class name.
-      config.dt = .01;
-      config.max_acc = 7.0;
-      config.max_jerk = 50.0;
-      config.max_vel = 10.0;
-      final String path_name = "WallLanePath";
-      
-      // Description of this auto mode path.
-      // Remember that this is for the GO LEFT CASE!
-      WaypointSequence p = new WaypointSequence(10);
-      p.addWaypoint(new WaypointSequence.Waypoint(0, 0, 0));
-      p.addWaypoint(new WaypointSequence.Waypoint(2.5, 0, 0));
-      p.addWaypoint(new WaypointSequence.Waypoint(10.5, 8, Math.PI/12.0));
-      p.addWaypoint(new WaypointSequence.Waypoint(13.75, 9.5, 0.0/* * Math.PI/18.0*/));
-      
+			final String path_name = "LowBarTwoBall-Back";
 
-      Path path = PathGenerator.makePath(p, config,
-          kWheelbaseWidth, path_name);
+			WaypointSequence points = new WaypointSequence(10);
+			points.addWaypoint(new Waypoint(6, 26, -Math.PI * 5.0 / 180));
+			points.addWaypoint(new Waypoint(35, 24, 0));
+			points.addWaypoint(new Waypoint(86, 24, 0));
+			points.addWaypoint(new Waypoint(120, 24, 0));
+			points.addWaypoint(new Waypoint(190 + 24, 0, -Math.PI * 20.0 / 180));
 
-      // Outputs to the directory supplied as the first argument.
-      TextFileSerializer js = new TextFileSerializer();
-      String serialized = js.serialize(path);
-      //System.out.print(serialized);
-      String fullpath = joinPath(directory, path_name + ".txt");
-      if (!writeFile(fullpath, serialized)) {
-        System.err.println(fullpath + " could not be written!!!!1");
-        System.exit(1);
-      } else {
-        System.out.println("Wrote " + fullpath);
-      }
-    }
-  }
+			Path path = PathGenerator.makePath(points, config, wheelBase_width, path_name);
+
+			create(path, directory, workingDirectory, path_name, true);
+		}
+		
+		{
+			config(0.85);
+
+			final String path_name = "LowBarTwoBall-Cross";
+			
+			WaypointSequence points = new WaypointSequence(10);
+			points.addWaypoint(new Waypoint(6, 2 + 46, -Math.PI * 5.0 / 180));
+			points.addWaypoint(new Waypoint(35, 5 + 46, 0));
+			points.addWaypoint(new Waypoint(86, 5 + 46, 0));
+			points.addWaypoint(new Waypoint(90, 5 + 46, 0));
+			points.addWaypoint(new Waypoint(190 + 24, 0, -Math.PI * 57.0 / 180));	
+		
+			Path path = PathGenerator.makePath(points, config, wheelBase_width, path_name);
+
+			create(path, directory, workingDirectory, path_name, false);
+		}
+		
+		{
+			config(0.8);
+
+			final String path_name = "LowBarAutoBall-Back";
+
+			WaypointSequence points = new WaypointSequence(10);
+			points.addWaypoint(new Waypoint(0, 15, 0));
+			points.addWaypoint(new Waypoint(86, 15, 0));
+			points.addWaypoint(new Waypoint(150, 15, 0));
+			points.addWaypoint(new Waypoint(190, 0, -Math.PI * 57.0 / 180));
+
+			Path path = PathGenerator.makePath(points, config, wheelBase_width, path_name);
+
+			create(path, directory, workingDirectory, path_name, true);
+		}
+		
+		{
+			config(0.8);
+
+			final String path_name = "LowBarAutoBall-Cross";
+			
+			WaypointSequence points = new WaypointSequence(10);
+			points.addWaypoint(new Waypoint(0, 0, 0));
+			points.addWaypoint(new Waypoint(48, 0, 0));
+			points.addWaypoint(new Waypoint(150, 0, 0));
+			points.addWaypoint(new Waypoint(190, -36, -Math.PI * 57.0 / 180));
+			
+			Path path = PathGenerator.makePath(points, config, wheelBase_width, path_name);
+
+			create(path, directory, workingDirectory, path_name, false);
+		}
+		
+		{
+			config(0.825);
+
+			final String path_name = "LowBarOneBallAlt-Cross";
+
+			WaypointSequence p = new WaypointSequence(10);
+			p.addWaypoint(new Waypoint(0, 36 - 5, 0));
+			p.addWaypoint(new Waypoint(48, 36 - 5, 0));
+			p.addWaypoint(new Waypoint(90, 36 - 5, 0));
+			p.addWaypoint(new Waypoint(190 + 24, -10, -Math.PI * 57.0 / 180));
+			//p.addWaypoint(new Waypoint(160, -10, -Math.PI / 4));
+			Path path = PathGenerator.makePath(p, config, 24, path_name);
+
+			create(path, directory, workingDirectory, path_name, false);
+			create(path, directory, workingDirectory, path_name + "-Back", true);
+		}
+		
+		{
+			config(0.68);
+
+			final String path_name = "LowBarTwoBallAlt-Back";
+
+			WaypointSequence points = new WaypointSequence(10);
+			points.addWaypoint(new Waypoint(-12, 0, Math.PI * 20.0 / 180));
+			points.addWaypoint(new Waypoint(48, 24, 0));
+			points.addWaypoint(new Waypoint(86, 24, 0));
+			points.addWaypoint(new Waypoint(120, 24, 0));
+			points.addWaypoint(new Waypoint(190 + 24, 0, -Math.PI * 20.0 / 180));
+
+			Path path = PathGenerator.makePath(points, config, wheelBase_width, path_name);
+
+			create(path, directory, workingDirectory, path_name, true);
+		}
+		
+		{
+			config(0.85);
+
+			final String path_name = "LowBarTwoBallAlt-Cross";
+			
+			WaypointSequence points = new WaypointSequence(10);
+			points.addWaypoint(new Waypoint(-12, 0, Math.PI * 20.0 / 180));
+			points.addWaypoint(new Waypoint(48, 24, 0));
+			points.addWaypoint(new Waypoint(86, 24, 0));
+			points.addWaypoint(new Waypoint(120, 24, 0));
+			points.addWaypoint(new Waypoint(190 + 24, -17, -Math.PI * 57.0 / 180));	
+		
+			Path path = PathGenerator.makePath(points, config, wheelBase_width, path_name);
+
+			create(path, directory, workingDirectory, path_name, false);
+		}
+		
+		{
+			config(0.9);
+
+			final String path_name = "PositionFive";
+			
+			WaypointSequence points = new WaypointSequence(10);
+			points.addWaypoint(new Waypoint(0, 0, -Math.PI * 20.0 / 180));	
+			points.addWaypoint(new Waypoint(48, -15, 0));	
+		
+			Path path = PathGenerator.makePath(points, config, wheelBase_width, path_name);
+
+			create(path, directory, workingDirectory, path_name + "-Forward", false);
+			create(path, directory, workingDirectory, path_name + "-Back", true);
+		}
+	}
+	
+	public static void createMoatCross() {
+		
+		WaypointSequence points = new WaypointSequence(10);
+		points.addWaypoint(new Waypoint(0, 0, 0));
+		points.addWaypoint(new Waypoint(Constants.MOAT_DISTANCE, 0, 0));
+		
+		createDefenseCross("Moat", points, Constants.MOAT_SPEED);
+	}
+	
+	public static void createRampartsCross() {
+		
+		WaypointSequence points = new WaypointSequence(10);
+		points.addWaypoint(new Waypoint(0, 0, 0));
+		points.addWaypoint(new Waypoint(Constants.RAMPARTS_DISTANCE, 0, 0));
+		
+		createDefenseCross("Ramparts", points, Constants.RAMPARTS_SPEED);
+	}
+	
+	public static void createRoughTerrainCross() {
+		
+		WaypointSequence points = new WaypointSequence(10);
+		points.addWaypoint(new Waypoint(0, 0, 0));
+		points.addWaypoint(new Waypoint(Constants.ROUGH_TERRAIN_DISTANCE, 0, 0));
+		
+		createDefenseCross("RoughTerrain", points, Constants.ROUGH_TERRAIN_SPEED);
+	}
+	
+	public static void createRockWallCross() {
+
+		WaypointSequence points = new WaypointSequence(10);
+		points.addWaypoint(new Waypoint(0, 0, 0));
+		points.addWaypoint(new Waypoint(Constants.ROCK_WALL_DISTANCE, 0, 0));
+		
+		createDefenseCross("RockWall", points, Constants.ROCK_WALL_SPEED);
+	}
+	
+	public static void createSallyCross() {
+
+		WaypointSequence points = new WaypointSequence(10);
+		points.addWaypoint(new Waypoint(0, 0, 0));
+		points.addWaypoint(new Waypoint(Constants.SALLY_PORT_CROSS - 50, 0, 0));
+		points.addWaypoint(new Waypoint(Constants.SALLY_PORT_CROSS, -50, 0));
+		
+		createDefenseCross("SallyPortLeft", points, Constants.SALLY_PORT_SPEED);
+		
+
+		WaypointSequence pointsB = new WaypointSequence(10);
+		pointsB.addWaypoint(new Waypoint(0, 0, 0));
+		pointsB.addWaypoint(new Waypoint(Constants.SALLY_PORT_CROSS - 50, 0, 0));
+		pointsB.addWaypoint(new Waypoint(Constants.SALLY_PORT_CROSS, 50, 0));
+		
+		createDefenseCross("SallyPortRight", pointsB, Constants.SALLY_PORT_SPEED);
+	}
+	
+	public static void createDefenseCross(String name, WaypointSequence points, double percentSpeed) {
+		
+		{
+			config(percentSpeed);
+
+			Path path = PathGenerator.makePath(points, config, wheelBase_width, name);
+
+			create(path, directory, workingDirectory, name + "-Back", true);
+			create(path, directory, workingDirectory, name + "-Cross", false);
+		}
+	}
 }

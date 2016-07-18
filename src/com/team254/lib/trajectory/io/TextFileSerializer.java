@@ -2,6 +2,7 @@ package com.team254.lib.trajectory.io;
 
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.Trajectory.Segment;
+import com.team254.lib.trajectory.Main;
 import com.team254.lib.trajectory.Path;
 
 /**
@@ -29,12 +30,42 @@ public class TextFileSerializer implements IPathSerializer {
    * @return A string representation.
    */
   public String serialize(Path path) {
-    String content = path.getName() + "\n";
-    path.goLeft();
-    content += path.getLeftWheelTrajectory().getNumSegments() + "\n";
+	  String content = "";
     content += serializeTrajectory(path.getLeftWheelTrajectory());
     content += serializeTrajectory(path.getRightWheelTrajectory());
     return content;
+  }
+  
+  public String serializeLeft(Path path) {
+	  return serializeTrajectory(path.getLeftWheelTrajectory());
+  }
+  
+  public String serializeRight(Path path) {
+	  return serializeTrajectory(path.getRightWheelTrajectory());
+  }
+  
+  public String serialize(Trajectory trajectory) {
+	  return serializeTrajectory(trajectory);
+  }
+  
+  public String serializeTogether(Path path) {
+	  return serializeTogether(path.getLeftWheelTrajectory(), path.getRightWheelTrajectory());
+  }
+  
+  private String serializeTogether(Trajectory left, Trajectory right) {
+	  String content = "";
+	    for (int i = 0; i < left.getNumSegments(); ++i) {
+	      Segment leftSeg = left.getSegment(i);
+	      Segment rightSeg = right.getSegment(i);
+	      content += String.format(
+	              "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n",
+	              leftSeg.dt, leftSeg.x, leftSeg.y, 
+	              leftSeg.pos, leftSeg.vel, leftSeg.acc, leftSeg.jerk,
+	              leftSeg.heading, rightSeg.dt, rightSeg.x, rightSeg.y, 
+	              rightSeg.pos, rightSeg.vel, rightSeg.acc, rightSeg.jerk,
+	              rightSeg.heading);
+	    }
+	    return content;
   }
   
   private String serializeTrajectory(Trajectory trajectory) {
@@ -42,11 +73,11 @@ public class TextFileSerializer implements IPathSerializer {
     for (int i = 0; i < trajectory.getNumSegments(); ++i) {
       Segment segment = trajectory.getSegment(i);
       content += String.format(
-              "%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f\n", 
+              "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n",
+              segment.dt, segment.x, segment.y, 
               segment.pos, segment.vel, segment.acc, segment.jerk,
-              segment.heading, segment.dt, segment.x, segment.y);
+              segment.heading);
     }
     return content;
   }
-  
 }
