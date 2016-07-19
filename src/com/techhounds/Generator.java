@@ -2,13 +2,15 @@ package com.techhounds;
 
 import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.PathGenerator;
+import com.team254.lib.trajectory.TrajectoryGenerator;
 import com.team254.lib.trajectory.WaypointSequence;
 import com.team254.lib.trajectory.WaypointSequence.Waypoint;
 
 public class Generator extends Functions {
 
 	public static final double dt = .01, max_acc = 220.0, max_jerk = 480.0, max_vel = 110.0;
-
+    public static TrajectoryGenerator.Config config = new TrajectoryGenerator.Config();
+    
 	static final double wheelBase_width = 24.0;
 	static String directory = "../TrajectoryLibrary-Build/paths";
 	static String workingDirectory = "../TrajectoryLibrary-Build/paths/trajectory";
@@ -254,5 +256,9 @@ public class Generator extends Functions {
 			create(path, directory, workingDirectory, name + "-Back", true);
 			create(path, directory, workingDirectory, name + "-Cross", false);
 		}
+	}
+	
+	public static void config(double percentVel) {
+		config.max_vel = percentVel * max_vel;
 	}
 }

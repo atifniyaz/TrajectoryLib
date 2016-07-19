@@ -13,14 +13,6 @@ import com.team254.lib.trajectory.io.TextFileSerializer;
 
 public class Functions {
 
-	protected static TrajectoryGenerator.Config config = new TrajectoryGenerator.Config();;
-
-	public static final double dt = 0.0, max_acc = 0.0, max_jerk = 0.0, max_vel = 0.0;
-
-	public static void config(double percentVel) {
-		config.max_vel = percentVel * max_vel;
-	}
-
 	public static void create(Path path, String directory, String workingDirectory, String path_name, boolean toFlip) {
 		// Outputs to the directory supplied as the first argument.
 		TextFileSerializer js = new TextFileSerializer();
