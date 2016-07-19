@@ -1,3 +1,3 @@
-# TrajectoryLib
+# lib-trajectory
 
-254's Trajectory Configuring Library that Creates Motion Profiles for FRC Code.
+Generate Motion Profiles offboard and then implement as necessary into your Robot Code (ex. read profiles from a file on your roborio)
