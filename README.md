@@ -1,3 +1,8 @@
-# TrajectoryLib
+# lib-trajectory 2016
 
-254's Trajectory Configuring Library that Creates Motion Profiles for FRC Code.
+- Low Bar 1 Ball Auto (Cross and Back)
+- Low Bar 2 Ball Auto (Cross and Back)
+- Moat
+- Rock Wall
+- Sally Port
+- Rough Terrain
