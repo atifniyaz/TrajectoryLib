@@ -12,8 +12,8 @@ public class Generator extends Functions {
     public static TrajectoryGenerator.Config config = new TrajectoryGenerator.Config();
     
 	static final double wheelBase_width = 24.0;
-	static String directory = "../TrajectoryLibrary-Build/paths";
-	static String workingDirectory = "../TrajectoryLibrary-Build/paths/trajectory";
+	static String directory = "../lib-trajectory-profiles";
+	static String workingDirectory = "../lib-trajectory-profiles/trajectory";
 
 	public static void main(String[] args) {
 
